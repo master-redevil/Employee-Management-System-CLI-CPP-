@@ -196,12 +196,7 @@ int main() {
             
         } else if (find(help_command, help_command + sizeof(help_command)/sizeof(help_command[0]), command) != help_command + sizeof(help_command)/sizeof(help_command[0])) {
             clearscreen();
-            cout << "Available commands:" << endl;
-            cout << "Add Employee: Add Employee" << endl;
-            cout << "Remove Employee: Remove Employee" << endl;
-            cout << "List Employees: List Employees" << endl;
-            cout << "Show Help: Help" << endl;
-            cout << "Exit System: Exit" << endl;
+            display_help();
 
         } else if (find(exit_command, exit_command + sizeof(exit_command)/sizeof(exit_command[0]), command) != exit_command + sizeof(exit_command)/sizeof(exit_command[0])) {
             cout << "Exiting the system. Goodbye!" << endl;
