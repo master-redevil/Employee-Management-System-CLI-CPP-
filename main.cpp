@@ -10,11 +10,51 @@ using namespace std;
 
 //Defining Functions
 
-// Function to clear the console screen
+// Function to clear the console screen {clears the console and displays the welcome message}
 void clearscreen() {
     system("cls");
     cout << "Welcome To Employee Management System!" << endl;
 }
+
+// Function to display available commands {displays the list of available commands to the user}
+void display_help() {
+    cout << "Available commands:" << endl;
+    cout << "Add Employee: Add Employee" << endl;
+    cout << "Remove Employee: Remove Employee" << endl;
+    cout << "List Employees: List Employees" << endl;
+    cout << "Show Help: Help" << endl;
+    cout << "Exit System: Exit" << endl;
+}
+//function end {displays the list of available commands to the user}
+
+// Function to display all employees in a formatted table
+void display_employees(sqlite3* db) {
+    cout << "Listing all employees..." << endl;
+    // Display employees in a formatted table
+    const char* sql_list = "SELECT id, first_name, last_name, employee_position, email, contact_number, gender, age FROM employees;";
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, sql_list, -1, &stmt, nullptr) != SQLITE_OK) {
+        cerr << "Prepare failed: " << sqlite3_errmsg(db) << endl;
+    } else {
+        cout << left << setw(5) << "ID" << setw(15) << "First Name" << setw(15) << "Last Name" << setw(20) << "Position" << setw(35) << "Email" << setw(15) << "Contact" << setw(10) << "Gender" << setw(5) << "Age" << endl;
+        cout << string(120, '-') << endl;
+
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            int id = sqlite3_column_int(stmt, 0);
+            const char* first_name = (const char*)sqlite3_column_text(stmt, 1);
+            const char* last_name = (const char*)sqlite3_column_text(stmt, 2);
+            const char* position = (const char*)sqlite3_column_text(stmt, 3);
+            const char* email = (const char*)sqlite3_column_text(stmt, 4);
+            const char* contact_number = (const char*)sqlite3_column_text(stmt, 5);
+            const char* gender = (const char*)sqlite3_column_text(stmt, 6);
+            int age = sqlite3_column_int(stmt, 7);
+
+            cout << left << setw(5) << id << setw(15) << first_name << setw(15) << last_name << setw(20) << position << setw(35) << email << setw(15) << contact_number << setw(10) << gender << setw(5) << age << endl;
+        }
+    }
+    sqlite3_finalize(stmt);
+}
+//function end {display employees in a formatted table}
 
 
 int main() {
@@ -152,28 +192,8 @@ int main() {
             clearscreen();
             cout << "Listing all employees..." << endl;
             // Display employees in a formatted table
-            const char* sql_list = "SELECT id, first_name, last_name, employee_position, email, contact_number, gender, age FROM employees;";
-            sqlite3_stmt* stmt;
-            if (sqlite3_prepare_v2(db, sql_list, -1, &stmt, nullptr) != SQLITE_OK) {
-                cerr << "Prepare failed: " << sqlite3_errmsg(db) << endl;
-            } else {
-                cout << left << setw(5) << "ID" << setw(15) << "First Name" << setw(15) << "Last Name" << setw(20) << "Position" << setw(35) << "Email" << setw(15) << "Contact" << setw(10) << "Gender" << setw(5) << "Age" << endl;
-                cout << string(120, '-') << endl;
-                while (sqlite3_step(stmt) == SQLITE_ROW) {
-                    cout << left
-                        << setw(5) << sqlite3_column_int(stmt, 0)
-                        << setw(15) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1))
-                        << setw(15) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2))
-                        << setw(20) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3))
-                        << setw(35) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4))
-                        << setw(15) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 5))
-                        << setw(10) << reinterpret_cast<const char*>(sqlite3_column_text(stmt, 6))
-                        << setw(5) << sqlite3_column_int(stmt, 7)
-                        << endl;
-                }
-                sqlite3_finalize(stmt);
-            }
-
+            display_employees(db);
+            
         } else if (find(help_command, help_command + sizeof(help_command)/sizeof(help_command[0]), command) != help_command + sizeof(help_command)/sizeof(help_command[0])) {
             clearscreen();
             cout << "Available commands:" << endl;
