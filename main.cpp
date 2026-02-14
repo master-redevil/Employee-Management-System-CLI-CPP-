@@ -56,6 +56,11 @@ void display_employees(sqlite3* db) {
 }
 //function end {display employees in a formatted table}
 
+//bool function to check if command in array of commands
+bool matches(const string& cmd, string arr[], size_t size) {
+    return find(arr, arr + size, cmd) != arr + size;
+}
+
 
 int main() {
 
@@ -102,9 +107,9 @@ int main() {
     while (true) { // Main command loop
         cout << "=> ";
         getline(cin, command);
-        transform(command.begin(), command.end(), command.begin(), ::toupper);
+            transform(command.begin(), command.end(), command.begin(), ::toupper);
 
-        if (find(add_command, add_command + sizeof(add_command)/sizeof(add_command[0]), command) != add_command + sizeof(add_command)/sizeof(add_command[0])) {
+            if (matches(command, add_command, sizeof(add_command)/sizeof(add_command[0]))) {
             cout << "Adding an employee..." << endl;
             string first_name, last_name, position, email, contact, gender;
             int age;
@@ -158,7 +163,7 @@ int main() {
                 sqlite3_finalize(stmt);
             }
 
-        } else if (find(remove_command, remove_command + sizeof(remove_command)/sizeof(remove_command[0]), command) != remove_command + sizeof(remove_command)/sizeof(remove_command[0])) {
+        } else if (matches(command, remove_command, sizeof(remove_command)/sizeof(remove_command[0]))) {
             cout << "Removing an employee..." << endl;
             int id;
             cout << "Enter Employee ID to remove: ";
@@ -188,17 +193,17 @@ int main() {
                 cout << "Removal cancelled." << endl;
             }
 
-        } else if (find(list_command, list_command + sizeof(list_command)/sizeof(list_command[0]), command) != list_command + sizeof(list_command)/sizeof(list_command[0])) {
+        } else if (matches(command, list_command, sizeof(list_command)/sizeof(list_command[0]))) {
             clearscreen();
             cout << "Listing all employees..." << endl;
             // Display employees in a formatted table
             display_employees(db);
             
-        } else if (find(help_command, help_command + sizeof(help_command)/sizeof(help_command[0]), command) != help_command + sizeof(help_command)/sizeof(help_command[0])) {
+        } else if (matches(command, help_command, sizeof(help_command)/sizeof(help_command[0]))) {
             clearscreen();
             display_help();
 
-        } else if (find(exit_command, exit_command + sizeof(exit_command)/sizeof(exit_command[0]), command) != exit_command + sizeof(exit_command)/sizeof(exit_command[0])) {
+        } else if (matches(command, exit_command, sizeof(exit_command)/sizeof(exit_command[0]))) {
             cout << "Exiting the system. Goodbye!" << endl;
             break;
 
